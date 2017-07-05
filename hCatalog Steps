@@ -1,0 +1,37 @@
+                                                HCatalog
+HCatalog opens up the hive metadata to other mapreduce tools.
+HCatalog is not thread safe.
+
+HCatLoader :
+HCatLoader is used with Pig scripts to read data from HCatalog-managed tables.
+If the table is partitioned, you can indicate which partitions to scan by immediately following the load statement with a partition filter statement 
+Usage
+HCatLoader is accessed via a Pig load statement.  
+Using Pig 0.14+
+A = LOAD 'tablename' USING org.apache.hive.hcatalog.pig.HCatLoader();
+
+Here we load a hive table test to pig.Start pig shell using below command:
+1.	pig -useHCatalog
+2.	B = LOAD 'default.test' USING org.apache.hive.hcatalog.pig.HCatLoader()
+3.	dump B;
+
+HCatStorer : 
+HCatStorer is used with Pig scripts to write data to HCatalog-managed tables.
+
+Pre-requisite:  Hive table should exist in hive and its schema should match the pig data that we are going to store  in hive.
+
+Take care:  We have to take care of data types before going to perform this operation.
+For eg; If data type of name in pig is default i:e; bytearray and we are trying to store it in hive table having column data type string, then it throws error message  and this operation will fail.
+So, we have to make data type  of column (name) as chararry , then only it will perform successfully.
+
+File content :
+ 
+data1 = load '/user/root/neeraj/pig/sample.txt' using PigStorage(',') AS (name:chararray,loc:chararray,desg:chararray,cmp:chararray);
+projected1 = FOREACH data1 GENERATE name;
+
+STORE projected1 INTO  'default.hcatalog' USING org.apache.hive.hcatalog.pig.HCatStorer();
+
+In hive ,data is loaded in hcatalog table :
+ 
+
+
